@@ -70,32 +70,14 @@ INSERT INTO Employees (Employeeid, FIRST_NAME, LASTNAME, EMAIL, JobTitle)
 
 VALUES (3, 'Gideon', 'Maduku', 'm@gmail.com', 'Accountant');
 
--- Orders
-create table Orders (
-OrderId                Serial Primary key,
-ProductID              integer,
-PaymentID              integer,
-FUlfilledByEmployeeID  integer,
-DateRequired           timestamp,
-DateShipped            timestamp,
-Status                 varchar(20)
-);
-
-INSERT INTO orders (Orderid, productid, paymentid, FulfilledByEmployeeid, Daterequired, DateShipped, Status)
-VALUES (1, 1, 1, 2, '05-09-2018', Null , 'Not shipped');
-
-INSERT INTO orders (Orderid, productid, paymentid, FulfilledByEmployeeid, Daterequired, DateShipped, Status)
-VALUES (2, 1, 2, 2, '04-09-2018', '03-09-2018', 'Shipped');
-
-INSERT INTO orders (Orderid, productid, paymentid, FulfilledByEmployeeid, Daterequired, DateShipped, Status)
-VALUES (3, 3, 3, 3, '06-09-2018', Null , 'Not shipped');
 
 -- Payments
 create table Payments(
-customerid      Serial Primary key,
-PaymentID       integer,
-PaymentDate     timestamp,
-Amount          decimal
+customerid int, 
+PaymentID serial primary key, 
+PaymentDate timestamp, 
+Amount decimal 
+FOREIGN KEY (customerid) REFERENCES customers(customerid)
 );
 
 
@@ -109,11 +91,11 @@ INSERT INTO payments (customerid, paymentid, paymentdate, amount)
 VALUES (4, 3, '03-09-2018', 700.60);
 
 -- Products
-create table Products(
-ProductId       Serial Primary key,
-ProductName     VARCHAR (100),
-Description     VARCHAR(300),
-BuyPrice        decimal
+create table Products( 
+ProductId serial primary key, 
+ProductName VARCHAR (100), 
+Description VARCHAR(300), 
+BuyPrice decimal 
 );
 
 INSERT INTO products (productid, productname, Description, buyprice)
@@ -122,6 +104,29 @@ INSERT INTO products (productid, productname, Description, buyprice)
 VALUES (2, 'classic Car', 'Turnable front wheels, steering function', 550.75);
 INSERT INTO products (productid, productname, Description, buyprice)
 VALUES (3, 'Sports car', 'Turnable front wheels, steering function', 700.60);
+
+--  Orders
+create table Orders (
+OrderId Serial Primary key,
+ProductID integer, 
+PaymentID integer, 
+FUlfilledByEmployeeID integer, 
+DateRequired timestamp, 
+DateShipped timestamp, 
+Status varchar(20), 
+FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+FOREIGN KEY (PaymentID) REFERENCES Payments(PaymentsID),
+FOREIGN KEY (FUlfilledByEmployeeID) REFERENCES Employees(EmployeesID)
+);
+
+INSERT INTO orders (Orderid, productid, paymentid, FulfilledByEmployeeid, Daterequired, DateShipped, Status)
+VALUES (1, 1, 1, 2, '05-09-2018', Null , 'Not shipped');
+
+INSERT INTO orders (Orderid, productid, paymentid, FulfilledByEmployeeid, Daterequired, DateShipped, Status)
+VALUES (2, 1, 2, 2, '04-09-2018', '03-09-2018', 'Shipped');
+
+INSERT INTO orders (Orderid, productid, paymentid, FulfilledByEmployeeid, Daterequired, DateShipped, Status)
+VALUES (3, 3, 3, 3, '06-09-2018', Null , 'Not shipped');
 
 
 -- Part 2: Querying a database
@@ -154,7 +159,7 @@ select sum(amount) FROM payments
 -- 14.Count the number of shipped orders in the Orders table.
 select count(status='shipped') FROM Orders
 -- 15.Return the average price of all Products, in Rands and in Dollars (assume the exchange rate is R12 to the Dollar).
-select avg(buyprice)*12 from Products 
+select avg(buyprice)/12 from Products 
 -- 16.Using INNER JOIN create a query that selects all Payments with Customer information.
 select * From customers inner join payments on payments.customerid = customers.customerid
 -- 17.Select all products that have turnable front wheels.
